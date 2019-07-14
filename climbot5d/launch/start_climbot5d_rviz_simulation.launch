@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="gui" default="true" />
+  
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mr_description)/robots/climbot5d.urdf'" /> 
+
+  <!--generate pole-->
+  <node name="generate_pole" pkg="birl_module_robot" type="generate_pole"/>
+
+  <node name="static_world_A_broadcaster" pkg="birl_module_robot" type="static_world_A_broadcaster" args="base_gripper1 0 0 0 0 0 0"/>
+
+  <node name="publish_joint_state" pkg="birl_module_robot" type="publish_joint_state"/>
+  <node name="publish_transform" pkg="birl_module_robot" type="publish_transform"/>
+
+
+  
+  <node name="climbot_commander" pkg="joint_state_publisher" type="joint_state_publisher" >
+      <param name="use_gui" value="False"/>
+	    <param name="publish_frequency" type="double" value="10.0" />
+      <rosparam param="source_list">["/climbot5d/joint_command"]</rosparam>
+  </node>
+
+  <node name="climbot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mr_description)/rviz/tread.rviz" if="$(arg gui)" required="True" />  
+
+    <!--change baselink-->
+  <node name="climbot5d_rviz_simulation" pkg="birl_module_robot" type="climbot5d_simulation"/>
+</launch>

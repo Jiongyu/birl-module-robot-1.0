@@ -1,0 +1,55 @@
+climbot5d:
+
+  ## joint_names
+  joint_names: [G0_Joint,I1_Joint, T2_Joint, T3_Joint, T4_Joint, I5_Joint,G6_Joint]
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+  # G0 controller
+
+  jointG0_effort_controller:
+    type: effort_controllers/JointEffortController 
+    joint: G0_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+
+  jointG0_1_effort_controller:
+    type: effort_controllers/JointEffortController 
+    joint: G0_Joint1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  jointI1_position_controller:
+    type: effort_controllers/JointPositionController 
+    joint: I1_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}  
+
+  jointT2_position_controller:
+    type: effort_controllers/JointPositionController 
+    joint: T2_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}     
+
+  jointT3_position_controller:
+    type: effort_controllers/JointPositionController 
+    joint: T3_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}  
+
+  jointT4_position_controller:
+    type: effort_controllers/JointPositionController 
+    joint: T4_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  jointI5_position_controller:
+    type: effort_controllers/JointPositionController 
+    joint: I5_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  jointG6_effort_controller:
+    type: effort_controllers/JointEffortController 
+    joint: G6_Joint
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  jointG6_1_effort_controller:
+    type: effort_controllers/JointEffortController 
+    joint: G6_Joint1
+    pid: {p: 100.0, i: 0.01, d: 10.0}

@@ -1,0 +1,23 @@
+climbot5d:
+  ## joint_names
+  joint_names: [G0_Joint,I1_Joint, T2_Joint, T3_Joint, T4_Joint, I5_Joint,G6_Joint]
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+  
+  # Position Controllers ---------------------------------------
+  joint_group_position_controller:
+    type:  position_controllers/JointGroupPositionController
+    joints: 
+      - G0_Joint
+      - I1_Joint
+      - T2_Joint
+      - T3_Joint
+      - T4_Joint
+      - I5_Joint
+      - G6_Joint
+    required_drive_mode: 1
+    #pid: {p: 100.0, i: 0.01, d: 10.0}
+
+

@@ -1,0 +1,19 @@
+<launch>
+
+<!--start the can-->
+<!--
+<node name="can_prepare" pkg="canopen_communication" type="can_prepare.sh" required="true"/>
+-->
+
+<!--climbot5d_kinematics-->
+<node  name="climbot5d_inverse_solution" pkg="birl_module_robot" type="climbot5d_inverse_solution"/>
+<node  name="climbot5d_positive_solution" pkg="birl_module_robot" type="climbot5d_positive_solution"/>
+<node  name="climbot5d_interpolation" pkg="birl_module_robot" type="climbot5d_interpolation"/>
+
+<!--arm5d_kinematics-->
+<!--<node  name="arm5d_inverse_solution" pkg="arm5d" type="arm5d_inverse_solution"/>
+<node  name="arm5d_positive_solution" pkg="arm5d" type="arm5d_positive_solution"/>-->
+
+<!--start the UI-->
+<node  name="start_ui" pkg="ui" type="main.py" required="true"/>
+</launch>

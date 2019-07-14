@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="climbot5d">
+
+  <xacro:property name="pi" value="3.1415926535897931" />
+  
+<!-- materials for visualization -->
+  <xacro:include filename="$(find mr_description)/urdf/materials.urdf.xacro" />
+
+  <!-- I Module -->
+  <xacro:include filename="$(find mr_description)/urdf/I_module/I_module.urdf.xacro" />
+
+  <!-- T Module -->
+  <xacro:include filename="$(find mr_description)/urdf/T_module/T_module.urdf.xacro" />
+  
+  <!-- I Invert Module -->
+  <xacro:include filename="$(find mr_description)/urdf/I_module/I_invert.urdf.xacro" />
+  
+  <!-- T Invert Module -->
+  <xacro:include filename="$(find mr_description)/urdf/T_module/T_invert.urdf.xacro" />
+
+  <!-- Gripper100 Module -->
+  <xacro:include filename="$(find mr_description)/urdf/G_module.urdf.xacro" />
+    
+  <!-- Gripper100 invert Module -->
+  <xacro:include filename="$(find mr_description)/urdf/G_invert.urdf.xacro" />
+  
+  <!-- sleeve_link Module -->
+  <xacro:include filename="$(find mr_description)/urdf/sleeve_link.urdf.xacro" />
+<!-- Now we can start using the macros included above to define the actual robot -->
+
+  <link name="base_gripper1" />
+<!--
+  <joint  name="pole1_Joint"  type="fixed">
+    <origin  xyz="0 0.18 0" rpy="0 0 0" />
+    <parent link="base_gripper1" />
+    <child  link="pole1" />
+  </joint>  
+  
+  <link name="pole1" >
+      <visual>
+      <origin xyz="0 0 0.7" rpy="0 0 ${pi*0.25}" />e http://wiki.ros.org/xacro#Processing_Order
+redefining global property: pi
+when processing file: climbot5d_positive.urdf.xacro
+redefining global property: pi
+when processing file: climbot5d_positive.urdf.xacro
+redefining global property: pi
+when processing file: climbo
+      <geometry>
+	<box size="0.04 0.04 2"/>
+      </geometry>
+      <material name="Blue"/>
+    </visual>
+    
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+	<box size="0.04 0.04 2"/>
+      </geometry>
+    </collision>
+  </link>
+  -->
+    <!--climbot move group 1-->
+  <xacro:G_invert name="G0" parent="base_gripper1" >
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:G_invert>
+  
+  <xacro:I_module name="I1" parent="G0_palm_link">
+    <origin xyz="0 0 0" rpy="${pi*0.5} ${-pi*0.5} 0" />
+  </xacro:I_module>
+
+  <xacro:T_invert name="T2" parent="I1_Link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:T_invert>
+  
+  <xacro:T_module name="T3" parent="T2_Link" >
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:T_module>
+
+  <xacro:sleeve_link name="sl" parent="T3_Link" >
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:sleeve_link>
+  
+  <xacro:T_module name="T4" parent="sl_Link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:T_module>
+
+  <xacro:I_invert name="I5" parent="T4_Link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:I_invert>
+  
+  <xacro:G_module name="G6" parent="I5_Link">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+  </xacro:G_module>
+</robot>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="gui" default="true" />
+  
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mr_description)/robots/manipulator5d.urdf'" /> 
+
+  <node name="arm5d_commander" pkg="joint_state_publisher" type="joint_state_publisher" >
+      <param name="use_gui" value="False"/>
+	    <param name="publish_frequency" type="double" value="10.0" />
+      <param name="use_smallest_joint_limits" value="True"/>
+      <rosparam param="source_list">["Arm5d_simulation_Joint_state"]</rosparam>
+  </node>
+
+  <node name="climbot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
+
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mr_description)/rviz/manipulator5d.rviz" if="$(arg gui)" required="True" />  
+
+  <node name="arm5d_rviz_simulation" pkg="arm5d" type="arm5d_simulation"/>
+</launch>

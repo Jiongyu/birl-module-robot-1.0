@@ -1,0 +1,145 @@
+<?xml version="1.0" ?>
+<robot name="climbot5d" xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <material name="Orange">
+    <color rgba="1.0 0.4 0.0 1.0"/>
+  </material>
+  <material name="Grey">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+  <material name="DarkGrey">
+    <color rgba="0.3 0.3 0.3 1.0"/>
+  </material>
+  <material name="White">
+    <color rgba="1.0 1.0 1.0 1.0"/>
+  </material>
+  <material name="Black">
+    <color rgba="0.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="Red">
+    <color rgba="1.0 0.0 0.0 1.0"/>
+  </material>
+  <material name="Green">
+    <color rgba="0.0 1.0 0.0 1.0"/>
+  </material>
+  <material name="Blue">
+    <color rgba="0.0 0.0 0.8 1.0"/>
+  </material>
+  <material name="LightGrey">
+    <color rgba="0.82 0.82 0.82 1.0"/>
+  </material>
+
+   <!-- ros_control plugin -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>/climbot5d</robotNamespace>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    </plugin>
+  </gazebo>
+  <link name="base_gripper1"/>
+  <joint name="G0_joint_0" type="fixed">
+    <!--<origin rpy="0 0 0" xyz="0 0 0.17836"/>-->
+    <origin rpy="0 0 0" xyz="0 -0.17836 0"/>
+    <child link="G0_palm_link"/>
+    <!--    <parent link="${name}_tcp" />-->
+    <parent link="base_gripper1"/>
+  </joint>
+  <!--the palm link-->
+  <link name="G0_palm_link">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.000330111921985683 0.0532067396112178 -0.00203994238779312"/>
+      <mass value="1.0043961075726"/>
+      <inertia ixx="0.00113334295507504" ixy="8.90230328283654E-06" ixz="-1.34473831837329E-06" iyy="0.000914211060471031" iyz="-6.54903141389812E-05" izz="0.00129135037593152"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mr_description/meshes/palm_link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.1 0.1 0.1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="1.57079632679 0 0" xyz="0 0.065 0"/>
+      <!--      <origin xyz="0 0 0" rpy="0 0 0" />-->
+      <geometry>
+        <cylinder length="0.12" radius="0.05"/>
+        <!--        <mesh filename="package://mr_description/meshes/palm_link.STL" />-->
+      </geometry>
+    </collision>
+  </link>
+  <!--the IModule_InLink Gazebo tag-->
+  <gazebo reference="G0_palm_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <joint name="G0_offset_joint" type="fixed">
+    <origin rpy="1.57079632679 -1.57079632679 0" xyz="0 0 0"/>
+    <parent link="G0_palm_link"/>
+    <!--    <parent link="${name}_tcp" />-->
+    <child link="G0_Link"/>
+  </joint>
+  <link name="G0_Link"/>
+  <!--  joint between the palm and the left finger-->
+  <joint name="G0_Joint" type="prismatic">
+    <origin rpy="0 0 0" xyz="0.038 0 0"/>
+    <parent link="G0_palm_link"/>
+    <child link="G0_finger_link_l"/>
+    <axis xyz="-1 0 0"/>
+    <limit effort="1000" lower="-1.0" upper="1.0" velocity="0.02"/>
+    <dynamics damping="1" friction="1"/>
+  </joint>
+  <!-- test reduction ratio-->
+  <transmission name="G0_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="G0_Joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="G0_motor">
+      <mechanicalReduction>400</mechanicalReduction>
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </actuator>
+  </transmission>
+  <!--  the left finger link-->
+  <link name="G0_finger_link_l">
+    <inertial>
+      <origin rpy="0 0 0" xyz="-0.053748 0.15337 2.2717E-07"/>
+      <mass value="0.89853"/>
+      <inertia ixx="0.0023606" ixy="-0.00017835" ixz="4.9579E-09" iyy="0.00087228" iyz="-8.5058E-09" izz="0.0018271"/>
+    </inertial>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://mr_description/meshes/finger_link_l.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.52941 0.54902 0.54902 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="-0.05 0.18 0"/>
+      <!--      <origin  xyz="0 0 0" rpy="0 0 0" />-->
+      <geometry>
+        <box size="0.01 0.1 0.1"/>
+        <!--        <mesh filename="package://mr_description/meshes/finger_link_l.STL" />-->
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>10000</mu>
+            <mu2>10000</mu2>
+          </ode>
+        </friction>
+      </surface>
+    </collision>
+  </link>
+  <!--the IModule_InLink Gazebo tag-->
+  <gazebo reference="G0_finger_link_l">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+
+  </robot>
