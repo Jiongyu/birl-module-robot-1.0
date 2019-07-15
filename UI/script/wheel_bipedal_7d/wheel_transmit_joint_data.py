@@ -101,7 +101,7 @@ class Thread_transmit_joint_data_wheel(QThread):
         # 存储离线数据
         self.__offline_data = []
         # 关节误差
-        self.__error_joint = 2e-2
+        self.__error_joint = 1e-2
 
     def run(self):
         try:
@@ -439,31 +439,46 @@ class Thread_transmit_joint_data_wheel(QThread):
 
         try:
             if data:
-                self.I1.pause_run()
-                self.T2.pause_run()
-                self.T3.pause_run()
-                self.I4.pause_run()
-                self.T5.pause_run()
-                self.T6.pause_run()
-                self.I7.pause_run()
+                # self.I1.pause_run()
+                # self.T2.pause_run()
+                # self.T3.pause_run()
+                # self.I4.pause_run()
+                # self.T5.pause_run()
+                # self.T6.pause_run()
+                # self.I7.pause_run()
+                self.I1.sent_velocity(0)
+                self.T2.sent_velocity(0)
+                self.T3.sent_velocity(0)   
+                self.I4.sent_velocity(0)         
+                self.T5.sent_velocity(0)
+                self.T6.sent_velocity(0)
+                self.I7.sent_velocity(0) 
                 pass
             else:
-                self.I1.continue_run()
-                self.T2.continue_run()
-                self.T3.continue_run()
-                self.I4.continue_run()
-                self.T5.continue_run()
-                self.T6.continue_run()
-                self.I7.continue_run()
+                # self.I1.continue_run()
+                # self.T2.continue_run()
+                # self.T3.continue_run()
+                # self.I4.continue_run()
+                # self.T5.continue_run()
+                # self.T6.continue_run()
+                # self.I7.continue_run()
+                self.__choice_offline()
 
                 if self.__feedback_offline:
-                    self.I1.sent_velocity(self.__I1_velocity)
-                    self.T2.sent_velocity(self.__T2_velocity)
-                    self.T3.sent_velocity(self.__T3_velocity)   
-                    self.I4.sent_velocity(self.__I4_velocity)         
-                    self.T5.sent_velocity(self.__T5_velocity)
-                    self.T6.sent_velocity(self.__T6_velocity)
-                    self.I7.sent_velocity(self.__I7_velocity)
+                    if (not self.__I1_reached):
+                        self.I1.sent_velocity(self.__I1_velocity)
+                    if (not self.__T2_reached):
+                        self.T2.sent_velocity(self.__T2_velocity)
+                    if (not self.__T3_velocity):
+                        self.T3.sent_velocity(self.__T3_velocity)   
+                    if (not self.__I4_reached):
+                        self.I4.sent_velocity(self.__I4_velocity)         
+                    if (not self.__T5_reached):
+                        self.T5.sent_velocity(self.__T5_velocity)
+                    if (not self.__T6_reached):
+                        self.T6.sent_velocity(self.__T6_velocity)
+                    if (not self.__I7_reached):
+                        self.I7.sent_velocity(self.__I7_velocity)
                     pass
         except Exception as e:
             traceback.print_exc()
