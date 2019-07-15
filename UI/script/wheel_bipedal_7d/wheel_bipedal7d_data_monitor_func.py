@@ -20,8 +20,8 @@ class Wheel_bipedal7d_data_monitorfunc(QWidget,Ui_wheel_bipedal7d_data_monitor):
         self.lineEdit_5.setText("{0}".format(round(degrees(data[2]),3)))
         self.lineEdit_4.setText("{0}".format(round(degrees(data[3]),3)))
         self.lineEdit_6.setText("{0}".format(round(degrees(data[4]),3)))
-        self.lineEdit_6.setText("{0}".format(round(degrees(data[5]),3)))
-        self.lineEdit_6.setText("{0}".format(round(degrees(data[6]),3)))
+        self.lineEdit_7.setText("{0}".format(round(degrees(data[5]),3)))
+        self.lineEdit_8.setText("{0}".format(round(degrees(data[6]),3)))
 
 
         pass

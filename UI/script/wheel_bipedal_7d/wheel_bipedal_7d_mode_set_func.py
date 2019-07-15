@@ -269,7 +269,7 @@ class wheel_bipedal_7d_mode_set_func(QWidget,Ui_wheel_bipedal_7d_mode_set):
         self.T3_error = self.T3_value
         self.I4_error = self.I4_value
         self.T5_error = self.T5_value
-        self.T6_value = self.T6_value
+        self.T6_error = self.T6_value
         self.I7_error = self.I7_value
         
         self.windows_joint_control.lineEdit_2.setText("{0}".format(round(degrees(self.I1_value - self.I1_error), 3)))
