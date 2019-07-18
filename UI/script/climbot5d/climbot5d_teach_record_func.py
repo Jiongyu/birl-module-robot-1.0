@@ -41,7 +41,7 @@ class Climbot5d_teach_record_func(QWidget,Ui_climbot5d_teach_record):
             if not exists(self.__file_path):
                 with open (self.__file_path,'w+') as f:
                     for i in range(self.listWidget.count()):
-                        f.write("{0}\n".format(self.listWidget.item(i)))
+                        f.write("{0}\n".format(self.listWidget.item(i).text()))
                         pass
                 f.close()
                 self.listWidget.addItem("save file: teach_data_{0}.txt".format(self.__teach_data_index))
