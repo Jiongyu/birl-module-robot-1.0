@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>arm5d_mode_set</class>
+ <widget class="QWidget" name="arm5d_mode_set">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>239</width>
+    <height>306</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>50</y>
+     <width>140</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>关节空间控制</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_2">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>130</y>
+     <width>140</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>笛卡尔空间控制</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_3">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>51</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>返回</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_4">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>220</y>
+     <width>140</width>
+     <height>50</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>数据再现</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>arm5d_mode_set</receiver>
+   <slot>joint_control()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>117</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>29</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>arm5d_mode_set</receiver>
+   <slot>decartes_control()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>142</x>
+     <y>229</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>202</x>
+     <y>171</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>arm5d_mode_set</receiver>
+   <slot>return_last_ui()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>36</x>
+     <y>19</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>16</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_4</sender>
+   <signal>clicked()</signal>
+   <receiver>arm5d_mode_set</receiver>
+   <slot>data_show()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>160</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>220</x>
+     <y>232</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>joint_control()</slot>
+  <slot>decartes_control()</slot>
+  <slot>return_last_ui()</slot>
+  <slot>data_show()</slot>
+ </slots>
+</ui>
