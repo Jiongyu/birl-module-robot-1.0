@@ -4,10 +4,11 @@ import sys
 sys.path.append("./src/birl_module_robot/UI/scripts/climbot5d")
 from math import fabs,degrees,radians
 import time
+import string
 from PyQt5.QtWidgets import QWidget,QDesktopWidget,QFileDialog,QMessageBox
 from PyQt5.QtCore import pyqtSignal
 from climbot5d_data_show import Ui_climbot5d_Data_show
-from climbot5d_sent_offline_data import Climbot5d_interpolation
+# from climbot5d_sent_offline_data import Climbot5d_interpolation
 from climbot5d_data_show_monitor_func import Climbot5d_data_show_monitor_func
 from climbot5d_variable import Climbot5d_Variable
 
@@ -24,8 +25,8 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
     sin_G6_data = pyqtSignal(int)
     sin_G6_command = pyqtSignal(int)
 
-    sin_offline_data = pyqtSignal(list)
-    sin_vel = pyqtSignal(float)
+    # sin_offline_data = pyqtSignal(list)
+    # sin_vel = pyqtSignal(float)
     
     sin_quick_stop = pyqtSignal()
 
@@ -35,6 +36,7 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
     sin_pause_data_show = pyqtSignal(bool)
 
     def __init__(self,parent=None):
+        
         super(climbot5d_Data_show_func,self).__init__(parent)
         Climbot5d_Variable.__init__(self)
         self.setupUi(self)
@@ -49,16 +51,16 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
         # self.pushButton_14.setEnabled(False)
 
         self.joint_value = []
-        self.actual_joint_value = []
-        self.actual_line = 0
+        self.joint_velocity_ = []
+
 
         self.sin_G0_command.connect(self.G0_sent_torque)
         self.sin_G6_command.connect(self.G6_sent_torque)
 
-        self.sent_command = Climbot5d_interpolation()
-        self.sin_offline_data.connect(self.sent_command.receive_offline)
-        self.sin_vel.connect(self.sent_command.receive_max_joint_vel)
-        self.sent_command.sin_interpolation_data.connect(self.get_interpolation_data)
+        # self.sent_command = Climbot5d_interpolation()
+        # self.sin_offline_data.connect(self.sent_command.receive_offline)
+        # self.sin_vel.connect(self.sent_command.receive_max_joint_vel)
+        # self.sent_command.sin_interpolation_data.connect(self.get_interpolation_data)
         
         self.velocity = 0.02
 
@@ -73,29 +75,41 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
 
     # 载入文件
     def load_data(self):
-        
+        self.joint_value = []
+        self.joint_velocity_ = []
         text = self.textEdit.toPlainText()
         if text:
             try:
                 data = text.split('\n')
-                joint_data = []
+
                 for i in range(len(data)):
-                    line = data[i].split(',')
-                    joint_data.append(line)
-                # print joint_data
-                a = []
-                self.joint_value = [[]] * len(joint_data)
-                for i in range(len(joint_data)):
-                    # print joint_data[i]
-                    for j in range(len(joint_data[i])):
-                        a.append(round(float(joint_data[i][j]),4))       
-                    self.joint_value[i] = a
-                    a = []
-                del a
-                del data
-                del joint_data
+                    temp1 = data[i].replace(',','')    #删除逗号
+                    temp2 = temp1.replace(';','')   #删除分号
+                    data[i] = temp2.replace('=',' ')  #用空格替代等号
+                    # print data[i]
+                    if data[i].startswith('P'):   
+                        s = data[i].split()    #字符串按照空格分开，split()默认以空格分开 
+                        s[1] = round(radians(string.atof(s[1])),3)    #字符串转化为浮点数
+                        s[2] = round(radians(string.atof(s[2])),3)    #字符串转浮点数
+                        s[3] = round(radians(string.atof(s[3])),3)
+                        s[4] = round(radians(string.atof(s[4])),3)
+                        s[5] = round(radians(string.atof(s[5])),3)
+                        self.joint_value.append(s[1:6])
+                    else:
+                        if data[i].startswith('V'):
+                            v = data[i].split()
+                            v[1] =  abs( round(radians(string.atof(v[1])),3) )    #字符串转化为浮点数
+                            v[2] =  abs( round(radians(string.atof(v[2])),3) )    #字符串转浮点数
+                            v[3] =  abs( round(radians(string.atof(v[3])),3) )
+                            v[4] =  abs( round(radians(string.atof(v[4])),3) )
+                            v[5] =  abs( round(radians(string.atof(v[5])),3) )
+
+                            self.joint_velocity_.append(v[1:6])
+                            # print v[1:6]
+
                 self.listWidget.addItem('<< 成功载入数据')
                 # print self.joint_value
+                # print self.joint_velocity_  
             except:
                 self.__box = QMessageBox(QMessageBox.Warning, "错误", "文件载入错误(请确认数据格式,文件格式).")
                 self.__box.addButton(self.tr("确定"), QMessageBox.YesRole)
@@ -116,7 +130,7 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
 
 
     def start_data_show(self):
-        self.sin_joint_data.emit([self.joint_value,True])
+        self.sin_joint_data.emit([self.joint_value,True,self.joint_velocity_])
 
     def return_last_ui(self):
         self.sin_return_last_ui.emit()
@@ -151,8 +165,8 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
             self.pushButton_13.setEnabled(True)
             self.pushButton_14.setEnabled(True)
 
-            self.pushButton_6.setEnabled(True)
-            self.pushButton_2.setEnabled(True)
+            # self.pushButton_6.setEnabled(True)
+            # self.pushButton_2.setEnabled(True)
 
     def G0_close(self, pressed):
         if pressed:
@@ -168,8 +182,8 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
             self.pushButton_14.setEnabled(True)
             self.pushButton_13.setEnabled(True)
             self.pushButton_11.setEnabled(True)
-            self.pushButton_6.setEnabled(False)
-            self.pushButton_2.setEnabled(False)
+            # self.pushButton_6.setEnabled(False)
+            # self.pushButton_2.setEnabled(False)
 
         pass
 
@@ -195,8 +209,8 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
             self.pushButton_12.setEnabled(True)
             self.pushButton_11.setEnabled(True)
             self.pushButton_14.setEnabled(True)
-            self.pushButton_6.setEnabled(True)
-            self.pushButton_2.setEnabled(True)
+            # self.pushButton_6.setEnabled(True)
+            # self.pushButton_2.setEnabled(True)
             
 
     def G6_close(self, pressed):
@@ -216,8 +230,8 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
             self.pushButton_13.setEnabled(True)
             self.pushButton_12.setEnabled(True)
             self.pushButton_11.setEnabled(True)
-            self.pushButton_6.setEnabled(False)
-            self.pushButton_2.setEnabled(False)
+            # self.pushButton_6.setEnabled(False)
+            # self.pushButton_2.setEnabled(False)
 
     def G6_sent_torque(self, data):
         if data == 0:
@@ -228,26 +242,27 @@ class climbot5d_Data_show_func(QWidget,Ui_climbot5d_Data_show,Climbot5d_Variable
 
     def sent_offline_data(self):
         
-        self.sin_offline_data.emit(self.joint_value)
-        self.sin_vel.emit(round(degrees(self.velocity),1))
-        self.sent_command.start()
+        # self.sin_offline_data.emit(self.joint_value)
+        # self.sin_vel.emit(round(degrees(self.velocity),1))
+        # self.sent_command.start()
+        pass
     
     def quit_thread(self):
         self.sent_command.quit()
 
-    def get_interpolation_data(self,data):
-        self.joint_value = data
-        self.textEdit.clear()
-        line = ""
-        for i in range(len(self.joint_value)):
+    # def get_interpolation_data(self,data):
+    #     self.joint_value = data
+    #     self.textEdit.clear()
+    #     line = ""
+    #     for i in range(len(self.joint_value)):
 
-            line_1 = "pos:" + str(round(degrees(self.joint_value[i][0]),1)) + "," + str(round(degrees(self.joint_value[i][1]),1)) + "," + str(round(degrees(self.joint_value[i][2]),1)) + "," \
-                        + str(round(degrees(self.joint_value[i][3]),1)) + "," + str(round(degrees(self.joint_value[i][4]),1)) + "\n"\
-                     "vel:" + str(round(degrees(self.joint_value[i][5]),1)) + "," + str(round(degrees(self.joint_value[i][6]),1)) + "," + str(round(degrees(self.joint_value[i][7]),1)) + "," \
-                        + str(round(degrees(self.joint_value[i][8]),1)) + "," + str(round(degrees(self.joint_value[i][9]),1)) + "\n\n"
-            line += line_1
-        self.textEdit.setText(line)
-        self.listWidget.addItem(">>新插值数据.")
+    #         line_1 = "pos:" + str(round(degrees(self.joint_value[i][0]),1)) + "," + str(round(degrees(self.joint_value[i][1]),1)) + "," + str(round(degrees(self.joint_value[i][2]),1)) + "," \
+    #                     + str(round(degrees(self.joint_value[i][3]),1)) + "," + str(round(degrees(self.joint_value[i][4]),1)) + "\n"\
+    #                  "vel:" + str(round(degrees(self.joint_value[i][5]),1)) + "," + str(round(degrees(self.joint_value[i][6]),1)) + "," + str(round(degrees(self.joint_value[i][7]),1)) + "," \
+    #                     + str(round(degrees(self.joint_value[i][8]),1)) + "," + str(round(degrees(self.joint_value[i][9]),1)) + "\n\n"
+    #         line += line_1
+    #     self.textEdit.setText(line)
+    #     self.listWidget.addItem(">>新插值数据.")
         
     def quick_stop(self):
         self.sin_quick_stop.emit()

@@ -234,3 +234,4 @@ class Climbot5d_descartes_control_func(QWidget, Ui_Climbot5d_Descartes_control,C
     def receive_teach_data(self,data):
         self.sin_teach_data.emit(data)
         pass
+        

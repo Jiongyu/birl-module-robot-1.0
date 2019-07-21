@@ -317,7 +317,7 @@ class Climbot5d_joint_control_func(QWidget,Ui_Climbot5d_joint_control,Climbot5d_
         '''
         self.joint_velocity = data * 0.001  # rad
         self.listWidget.addItem(">>>速度:{}deg/s".format(round(degrees(self.joint_velocity),3)))
-        print self.joint_velocity
+        # print self.joint_velocity
 
     def set_zero(self):
         self.sin_set_zero.emit()

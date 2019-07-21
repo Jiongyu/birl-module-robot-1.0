@@ -10,6 +10,7 @@ import time
 import traceback
 from math import degrees, radians
 
+
 import rospy
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QDesktopWidget, QMessageBox, QWidget
@@ -254,7 +255,7 @@ class climbot5d_Mode_set_func(QWidget,Ui_climbot5d_Mode_Set,Climbot5d_Variable):
         self.windows_data_show.sin_pause_data_show.connect(self.data_show_pause)
         self.form.hide()
         self.windows_data_show.show()
-        self.sin_open_velocity_mode.emit()
+        self.sin_open_position_mode.emit()
 
     # 关闭离线数据窗口
     def close_data_show(self):
@@ -381,6 +382,7 @@ class climbot5d_Mode_set_func(QWidget,Ui_climbot5d_Mode_Set,Climbot5d_Variable):
         :param data:
         :return:
         '''
+        # print data
         if not self.simulation:
             self.sin_offline_data.emit(data)
     

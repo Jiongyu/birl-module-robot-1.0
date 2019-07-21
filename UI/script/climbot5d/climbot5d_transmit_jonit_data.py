@@ -35,9 +35,9 @@ class Thread_transmit_joint_data(QThread):
 
         # 用于接收逆解
         # this publisher was to sent desacrtes points by inverse algorithm to getting the joint datas.
-        self.pub_wdc = rospy.Publisher('climbot5d_Descartes_point', Float64MultiArray , queue_size = 5)
+        self.pub_wdc = rospy.Publisher('climboI5d_Descartes_point', Float64MultiArray , queue_size = 5)
         # this subscriber was to receive the joint data.
-        self.sub_wdc = rospy.Subscriber('climbot5d_Inverse_solution', Float64MultiArray , self.Inverse_solution_callback)
+        self.sub_wdc = rospy.Subscriber('climboI5d_Inverse_solution', Float64MultiArray , self.Inverse_solution_callback)
         self.descartes_point = Float64MultiArray()
         self.inverse_solution = Float64MultiArray()
         self.descartes_point.data = [1]*18
@@ -51,6 +51,14 @@ class Thread_transmit_joint_data(QThread):
         self.__T4_data = 0.0
         self.__I5_data = 0.0
         self.__G6_data = 0.0
+
+        #判断是否到达
+        self.__I1_reached = False
+        self.__T2_reached = False
+        self.__T3_reached = False
+        self.__T4_reached = False
+        self.__I5_reached = False
+
         # 设置零点使用
         self.__I1_error = 0
         self.__T2_error = 0
@@ -129,29 +137,24 @@ class Thread_transmit_joint_data(QThread):
                 if self.__position_mode:  
 
                     if self.__T2_old_data != self.__T2_data:
-                        if abs(self.__T2_data - self.__T2_error + 1.57079) <= 2.07:   # 1.57079 = 90deg  T2 real init position
-                            self.T2.sent_position(self.__T2_data,self.__T2_velocity)
-                            self.__T2_old_data = self.__T2_data
+                        self.T2.sent_position(self.__T2_data,self.__T2_velocity)
+                        self.__T2_old_data = self.__T2_data
 
                     if self.__T3_old_data != self.__T3_data:
-                        if abs(self.__T3_data - self.__T3_error) <= 2.07: 
-                            self.T3.sent_position(self.__T3_data,self.__T3_velocity)   
-                            self.__T3_old_data = self.__T3_data
+                        self.T3.sent_position(self.__T3_data,self.__T3_velocity)   
+                        self.__T3_old_data = self.__T3_data
 
                     if self.__T4_old_data != self.__T4_data:
-                        if abs(self.__T4_data - self.__T4_error + 1.57079) <= 2.07:   # 1.57079 = 90deg  T2 real init position
-                            self.T4.sent_position(self.__T4_data,self.__T4_velocity)         
-                            self.__T4_old_data = self.__T4_data
+                        self.T4.sent_position(self.__T4_data,self.__T4_velocity)         
+                        self.__T4_old_data = self.__T4_data
 
                     if self.__I1_old_data != self.__I1_data:
-                        if abs(self.__I1_data - self.__I1_error) <= 3.1416: 
-                            self.I1.sent_position(self.__I1_data,self.__I1_velocity)
-                            self.__I1_old_data = self.__I1_data
+                        self.I1.sent_position(self.__I1_data,self.__I1_velocity)
+                        self.__I1_old_data = self.__I1_data
 
                     if self.__I5_old_data != self.__I5_data:
-                        if abs(self.__I5_data - self.__I5_error) <= 3.1416:
-                            self.I5.sent_position(self.__I5_data,self.__I5_velocity)  
-                            self.__I5_old_data = self.__I5_data
+                        self.I5.sent_position(self.__I5_data,self.__I5_velocity)  
+                        self.__I5_old_data = self.__I5_data
                     self.__position_mode = False
 
                 elif self.__velocity_mode:
@@ -204,7 +207,7 @@ class Thread_transmit_joint_data(QThread):
                     elif self.__feedback_offline:
                         self.sin_offline_data_actual_joint_data.emit(self.__feedback)
                         self.__choice_offline()
-                    # time.sleep(0.01)
+                    time.sleep(0.0001)
 
                 except Exception as e:
                     traceback.print_exc()
@@ -313,7 +316,9 @@ class Thread_transmit_joint_data(QThread):
     # 速度模式下,发送离线数据     
     def offline_sent_data(self,data):
 
-        self.__offline_data , self.__feedback_offline = data
+        # print data
+
+        self.__offline_data , self.__feedback_offline ,self.__joint_velocity  = data
         self.__index = 0
 
         self.__I1_data = self.__offline_data[self.__index][0]
@@ -322,14 +327,14 @@ class Thread_transmit_joint_data(QThread):
         self.__T4_data = self.__offline_data[self.__index][3]
         self.__I5_data = self.__offline_data[self.__index][4]
 
-        self.__I1_velocity = self.__offline_data[self.__index][5]
-        self.__T2_velocity = self.__offline_data[self.__index][6]
-        self.__T3_velocity = self.__offline_data[self.__index][7]
-        self.__T4_velocity = self.__offline_data[self.__index][8]
-        self.__I5_velocity = self.__offline_data[self.__index][9]
+        self.__I1_velocity = self.__joint_velocity[self.__index][0]
+        self.__T2_velocity = self.__joint_velocity[self.__index][1]
+        self.__T3_velocity = self.__joint_velocity[self.__index][2]
+        self.__T4_velocity = self.__joint_velocity[self.__index][3]
+        self.__I5_velocity = self.__joint_velocity[self.__index][4]
 
-        self.__velocity_mode = True
-        self.__position_mode = False
+        self.__velocity_mode = False
+        self.__position_mode = True
 
         self.__feedback_joint = False
         self.__feedback_descartes = False
@@ -369,7 +374,7 @@ class Thread_transmit_joint_data(QThread):
 
         self.pub_wdc.publish(self.descartes_point)
         try:
-            rospy.wait_for_message("climbot5d_Inverse_solution", Float64MultiArray,timeout=3)
+            rospy.wait_for_message("climboI5d_Inverse_solution", Float64MultiArray,timeout=3)
         except:
             pass
         self.__I1_data = self.inverse_solution.data[0]
@@ -377,6 +382,7 @@ class Thread_transmit_joint_data(QThread):
         self.__T3_data = self.inverse_solution.data[2]
         self.__T4_data = self.inverse_solution.data[3]
         self.__I5_data = self.inverse_solution.data[4]
+
         self.__I1_velocity = self.inverse_solution.data[5]
         self.__T2_velocity = self.inverse_solution.data[6]
         self.__T3_velocity = self.inverse_solution.data[7]
@@ -387,11 +393,12 @@ class Thread_transmit_joint_data(QThread):
     # 判断是否输入下一点离线数据
     def __choice_offline(self):
 
-        if( abs(self.__offline_data[self.__index][0] - self.__feedback[1])<self.__error_joint and
-            abs(self.__offline_data[self.__index][1] - self.__feedback[2])<self.__error_joint and
-            abs(self.__offline_data[self.__index][2] - self.__feedback[3])<self.__error_joint and
-            abs(self.__offline_data[self.__index][3] - self.__feedback[4])<self.__error_joint and
-            abs(self.__offline_data[self.__index][4] - self.__feedback[5])<self.__error_joint):
+        if( self.__I1_reached  and
+            self.__T2_reached  and
+            self.__T3_reached  and
+            self.__T4_reached  and
+            self.__I5_reached 
+            ):
             # print 1
             self.__index  += 1
 
@@ -401,28 +408,55 @@ class Thread_transmit_joint_data(QThread):
                 self.__T3_data = self.__offline_data[self.__index][2]
                 self.__T4_data = self.__offline_data[self.__index][3]
                 self.__I5_data = self.__offline_data[self.__index][4]
-                
-                if self.__I1_velocity != self.__offline_data[self.__index][5]:
-                    self.__I1_velocity = self.__offline_data[self.__index][5]
-                if self.__T2_velocity != self.__offline_data[self.__index][6]:
-                    self.__T2_velocity = self.__offline_data[self.__index][6]
-                if self.__T3_velocity != self.__offline_data[self.__index][7]:
-                    self.__T3_velocity = self.__offline_data[self.__index][7]
-                if self.__T4_velocity != self.__offline_data[self.__index][8]:
-                    self.__T4_velocity = self.__offline_data[self.__index][8]
-                if self.__I5_velocity != self.__offline_data[self.__index][9]:
-                    self.__I5_velocity = self.__offline_data[self.__index][9]
 
-                self.__velocity_mode = True
+                self.__I1_velocity = self.__joint_velocity[self.__index][0]
+                self.__T2_velocity = self.__joint_velocity[self.__index][1]
+                self.__T3_velocity = self.__joint_velocity[self.__index][2]
+                self.__T4_velocity = self.__joint_velocity[self.__index][3]
+                self.__I5_velocity = self.__joint_velocity[self.__index][4]
+
+                self.__I1_reached = False
+                self.__T2_reached = False
+                self.__T3_reached = False
+                self.__T4_reached = False
+                self.__I5_reached = False
+
+                self.__position_mode = True
             else:
-                self.__velocity_mode = False
+                self.__I1_reached = False
+                self.__T2_reached = False
+                self.__T3_reached = False
+                self.__T4_reached = False
+                self.__I5_reached = False
+                self.__position_mode = False
                 self.__feedback_offline = False
-                self.I1.sent_velocity(0)
-                self.T2.sent_velocity(0)
-                self.T3.sent_velocity(0)   
-                self.T4.sent_velocity(0)         
-                self.I5.sent_velocity(0)
+
             pass
+
+        if( abs(self.__I1_data - self.__feedback[1] - self.__I1_error) <= self.__error_joint):
+            self.__I1_reached = True
+            self.__I1_velocity = 0
+            self.__position_mode = True
+
+        if(abs(self.__T2_data - self.__feedback[2] - self.__T2_error) <= self.__error_joint):
+            self.__T2_reached = True
+            self.__T2_velocity = 0
+            self.__position_mode = True
+
+        if(abs(self.__T3_data - self.__feedback[3] - self.__T3_error) <= self.__error_joint):
+            self.__T3_velocity = 0
+            self.__T3_reached = True
+            self.__position_mode = True
+
+        if(abs(self.__T4_data - self.__feedback[4] - self.__T4_error) <= self.__error_joint):
+            self.__T4_velocity = 0
+            self.__T4_reached = True
+            self.__position_mode = True
+
+        if(abs(self.__I5_data - self.__feedback[5] - self.__I5_error) <= self.__error_joint):
+            self.__I5_velocity = 0
+            self.__I5_reached = True
+            self.__position_mode = True
 
     # 暂停运行
     def pause_run(self,data):
