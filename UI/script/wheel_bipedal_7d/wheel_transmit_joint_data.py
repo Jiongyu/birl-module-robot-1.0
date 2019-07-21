@@ -122,37 +122,32 @@ class Thread_transmit_joint_data_wheel(QThread):
                 if self.__position_mode:  
 
                     if self.__T2_old_data != self.__T2_data:
-                        if abs(self.__T2_data - self.__T2_error ) <= 2.07:   
-                            self.__T2_old_data = self.__T2_data
+                        self.T2.sent_position(self.__T2_data,self.__T2_velocity)  
+                        self.__T2_old_data = self.__T2_data
 
                     if self.__T3_old_data != self.__T3_data:
-                        if abs(self.__T3_data - self.__T3_error - 1.57079) <= 2.07: # 1.57079 = 90deg  T3 real init position
-                            self.T2.sent_position(self.__T2_data,self.__T2_velocity)
-                            self.T3.sent_position(self.__T3_data,self.__T3_velocity)   
-                            self.__T3_old_data = self.__T3_data
+                        self.T3.sent_position(self.__T3_data,self.__T3_velocity)   
+                        self.__T3_old_data = self.__T3_data
 
                     if self.__I4_old_data != self.__I4_data:
-                        if abs(self.__I4_data - self.__I4_error ) <= 2.07:   
-                            self.I4.sent_position(self.__I4_data,self.__I4_velocity)         
-                            self.__I4_old_data = self.__I4_data
+                        self.I4.sent_position(self.__I4_data,self.__I4_velocity)         
+                        self.__I4_old_data = self.__I4_data
 
                     if self.__I1_old_data != self.__I1_data:
-                            self.I1.sent_position(self.__I1_data,self.__I1_velocity)
-                            self.__I1_old_data = self.__I1_data
+                        self.I1.sent_position(self.__I1_data,self.__I1_velocity)
+                        self.__I1_old_data = self.__I1_data
 
                     if self.__T5_old_data != self.__T5_data:
-                        if abs(self.__T5_data - self.__T5_error - 1.57079) <= 3.1416: # 1.57079 = 90deg  T5 real init position
-                            self.T5.sent_position(self.__T5_data,self.__T5_velocity)  
-                            self.__T5_old_data = self.__T5_data
+                        self.T5.sent_position(self.__T5_data,self.__T5_velocity)  
+                        self.__T5_old_data = self.__T5_data
 
                     if self.__T6_old_data != self.__T6_data:
-                        if abs(self.__T6_data - self.__T6_error) <= 2.07:
-                            self.T6.sent_position(self.__T6_data,self.__T6_velocity)  
-                            self.__T6_old_data = self.__T6_data
+                        self.T6.sent_position(self.__T6_data,self.__T6_velocity)  
+                        self.__T6_old_data = self.__T6_data
 
                     if self.__I7_old_data != self.__I7_data:
-                            self.I7.sent_position(self.__I7_data,self.__I7_velocity)  
-                            self.__I7_old_data = self.__I7_data
+                        self.I7.sent_position(self.__I7_data,self.__I7_velocity)  
+                        self.__I7_old_data = self.__I7_data
                     self.__position_mode = False
 
                 elif self.__velocity_mode:
@@ -254,7 +249,8 @@ class Thread_transmit_joint_data_wheel(QThread):
             self.T6.start()
             self.I7.start()
             # set position mode.
-            self.set_velocity_mode()
+            # self.set_velocity_mode()
+            self.set__position_mode()
 
     # 关节空间,速度模式发送关节数据
     def joint_sent_data(self,velocity):
@@ -308,8 +304,11 @@ class Thread_transmit_joint_data_wheel(QThread):
         self.__T6_velocity = self.__joint_velocity[self.__index][5]
         self.__I7_velocity = self.__joint_velocity[self.__index][6]
 
-        self.__velocity_mode = True
-        self.__position_mode = False
+        # self.__velocity_mode = True
+        # self.__position_mode = False
+
+        self.__velocity_mode = False
+        self.__position_mode = True
 
         self.__feedback_joint = False
         self.__feedback_offline = True 
@@ -336,7 +335,7 @@ class Thread_transmit_joint_data_wheel(QThread):
 
             if self.__index < len(self.__offline_data):
 
-                print self.__offline_data[self.__index]
+                # print self.__offline_data[self.__index]
 
                 self.__I1_data = self.__offline_data[self.__index][0]
                 self.__T2_data = self.__offline_data[self.__index][1]
@@ -362,20 +361,21 @@ class Thread_transmit_joint_data_wheel(QThread):
                 self.__T6_reached = False 
                 self.__I7_reached = False
 
-                self.__velocity_mode = True 
+                # self.__velocity_mode = True
+                self.__position_mode = True 
 
             else:
                 print "end"
 
                 self.__velocity_mode = False
                 self.__feedback_offline = False
-                self.I1.sent_velocity(0)
-                self.T2.sent_velocity(0)
-                self.T3.sent_velocity(0)   
-                self.I4.sent_velocity(0)         
-                self.T5.sent_velocity(0)
-                self.T6.sent_velocity(0)
-                self.I7.sent_velocity(0)            
+                # self.I1.sent_velocity(0)
+                # self.T2.sent_velocity(0)
+                # self.T3.sent_velocity(0)   
+                # self.I4.sent_velocity(0)         
+                # self.T5.sent_velocity(0)
+                # self.T6.sent_velocity(0)
+                # self.I7.sent_velocity(0)            
             pass
 
 
@@ -400,37 +400,37 @@ class Thread_transmit_joint_data_wheel(QThread):
         if( abs(self.__I1_data - self.__feedback[0] - self.__I1_error) <= self.__error_joint):
             self.__I1_reached = True
             self.__I1_velocity = 0
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__T2_data - self.__feedback[1] - self.__T2_error) <= self.__error_joint):
             self.__T2_reached = True
             self.__T2_velocity = 0
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__T3_data - self.__feedback[2] - self.__T3_error) <= self.__error_joint):
             self.__T3_velocity = 0
             self.__T3_reached = True
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__I4_data - self.__feedback[3] - self.__I4_error) <= self.__error_joint):
             self.__I4_velocity = 0
             self.__I4_reached = True
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__T5_data - self.__feedback[4] - self.__T5_error) <= self.__error_joint):
             self.__T5_velocity = 0
             self.__T5_reached = True
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__T6_data - self.__feedback[5] - self.__T6_error) <= self.__error_joint):
             self.__T6_velocity = 0
             self.__T6_reached = True
-            self.__velocity_mode = True
+            self.__position_mode = True
 
         if(abs(self.__I7_data - self.__feedback[6] - self.__I7_error) <= self.__error_joint):
             self.__I7_velocity = 0 
             self.__I7_reached = True
-            self.__velocity_mode = True
+            self.__position_mode = True
          
         
 
@@ -446,13 +446,13 @@ class Thread_transmit_joint_data_wheel(QThread):
                 # self.T5.pause_run()
                 # self.T6.pause_run()
                 # self.I7.pause_run()
-                self.I1.sent_velocity(0)
-                self.T2.sent_velocity(0)
-                self.T3.sent_velocity(0)   
-                self.I4.sent_velocity(0)         
-                self.T5.sent_velocity(0)
-                self.T6.sent_velocity(0)
-                self.I7.sent_velocity(0) 
+                # self.I1.sent_velocity(0)
+                # self.T2.sent_velocity(0)
+                # self.T3.sent_velocity(0)   
+                # self.I4.sent_velocity(0)         
+                # self.T5.sent_velocity(0)
+                # self.T6.sent_velocity(0)
+                # self.I7.sent_velocity(0) 
                 pass
             else:
                 # self.I1.continue_run()
@@ -462,23 +462,23 @@ class Thread_transmit_joint_data_wheel(QThread):
                 # self.T5.continue_run()
                 # self.T6.continue_run()
                 # self.I7.continue_run()
-                self.__choice_offline()
+                # self.__choice_offline()
 
                 if self.__feedback_offline:
-                    if (not self.__I1_reached):
-                        self.I1.sent_velocity(self.__I1_velocity)
-                    if (not self.__T2_reached):
-                        self.T2.sent_velocity(self.__T2_velocity)
-                    if (not self.__T3_velocity):
-                        self.T3.sent_velocity(self.__T3_velocity)   
-                    if (not self.__I4_reached):
-                        self.I4.sent_velocity(self.__I4_velocity)         
-                    if (not self.__T5_reached):
-                        self.T5.sent_velocity(self.__T5_velocity)
-                    if (not self.__T6_reached):
-                        self.T6.sent_velocity(self.__T6_velocity)
-                    if (not self.__I7_reached):
-                        self.I7.sent_velocity(self.__I7_velocity)
+                    # if (not self.__I1_reached):
+                    #     self.I1.sent_velocity(self.__I1_velocity)
+                    # if (not self.__T2_reached):
+                    #     self.T2.sent_velocity(self.__T2_velocity)
+                    # if (not self.__T3_velocity):
+                    #     self.T3.sent_velocity(self.__T3_velocity)   
+                    # if (not self.__I4_reached):
+                    #     self.I4.sent_velocity(self.__I4_velocity)         
+                    # if (not self.__T5_reached):
+                    #     self.T5.sent_velocity(self.__T5_velocity)
+                    # if (not self.__T6_reached):
+                    #     self.T6.sent_velocity(self.__T6_velocity)
+                    # if (not self.__I7_reached):
+                    #     self.I7.sent_velocity(self.__I7_velocity)
                     pass
         except Exception as e:
             traceback.print_exc()

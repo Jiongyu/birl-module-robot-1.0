@@ -141,7 +141,7 @@ class wheel_bipedal_7d_mode_set_func(QWidget,Ui_wheel_bipedal_7d_mode_set):
         self.windows_joint_control.show()
         
         if not self.simulation:
-            # self.sin_open_velocity_mode.emit()
+            self.sin_open_velocity_mode.emit()
             pass
     
     # 离线数据窗口
@@ -161,7 +161,7 @@ class wheel_bipedal_7d_mode_set_func(QWidget,Ui_wheel_bipedal_7d_mode_set):
 
         self.form.hide()
         self.windows_data_show.show()
-        # self.sin_open_velocity_mode.emit()
+        self.sin_open_position_mode.emit()
 
     # 关闭离线数据窗口
     def close_data_show(self):

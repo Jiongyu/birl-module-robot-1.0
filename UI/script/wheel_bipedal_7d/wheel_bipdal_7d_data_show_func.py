@@ -51,7 +51,8 @@ class Wheel_bipedal_7d_data_show_func(QWidget,Ui_wheel_bipdeal_7d_data_show):
 
     # 载入文件
     def load_data(self):
-        
+        self.joint_value = []
+        self.joint_velocity_ = []
         text = self.textEdit.toPlainText()
         if text:
             try:
@@ -76,13 +77,23 @@ class Wheel_bipedal_7d_data_show_func(QWidget,Ui_wheel_bipdeal_7d_data_show):
                         if data[i].startswith('V'):
                             v = data[i].split()
                             # print v
-                            v[1] =  round(radians(string.atof(v[1])),3)    #字符串转化为浮点数
-                            v[2] =  round(radians(string.atof(v[2])),3)    #字符串转浮点数
-                            v[3] =  round(radians(string.atof(v[3])),3)
-                            v[4] =  round(radians(string.atof(v[4])),3)
-                            v[5] =  round(radians(string.atof(v[5])),3)
-                            v[6] =  round(radians(string.atof(v[6])),3)
-                            v[7] =  round(radians(string.atof(v[7])),3)
+                            # v[1] =  round(radians(string.atof(v[1])),3)    #字符串转化为浮点数
+                            # v[2] =  round(radians(string.atof(v[2])),3)    #字符串转浮点数
+                            # v[3] =  round(radians(string.atof(v[3])),3)
+                            # v[4] =  round(radians(string.atof(v[4])),3)
+                            # v[5] =  round(radians(string.atof(v[5])),3)
+                            # v[6] =  round(radians(string.atof(v[6])),3)
+                            # v[7] =  round(radians(string.atof(v[7])),3)
+
+                            v[1] =  abs( round(radians(string.atof(v[1])),3) )    #字符串转化为浮点数
+                            v[2] =  abs( round(radians(string.atof(v[2])),3) )    #字符串转浮点数
+                            v[3] =  abs( round(radians(string.atof(v[3])),3) )
+                            v[4] =  abs( round(radians(string.atof(v[4])),3) )
+                            v[5] =  abs( round(radians(string.atof(v[5])),3) )
+                            v[6] =  abs( round(radians(string.atof(v[6])),3) )
+                            v[7] =  abs( round(radians(string.atof(v[7])),3) )
+
+
                             self.joint_velocity_.append(v[1:8])
                             # print v[1:8]
 
