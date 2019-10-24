@@ -131,7 +131,7 @@ class I85(Canopen_control_init):
         get the motor actual value
         :return velocity(rad/s)
         """
-        return (self._I85_msg_from_device(self.node.sdo[0x606c].phys)) * 10 # rad/s
+        return (self._I85_msg_from_device(self.node.sdo[0x606c].phys)) / 10 # rad/s
 
     def get_torque(self):
         """
@@ -162,12 +162,6 @@ class I85(Canopen_control_init):
         self.node.sdo[0x6040].bits[8] = 1
 
     def continue_run(self):
-        # self.node.sdo[0x6040].bits[0] = 1
-        # self.node.sdo[0x6040].bits[1] = 1
-        # self.node.sdo[0x6040].bits[2] = 1
-        # self.node.sdo[0x6040].bits[3] = 1
-     
-        # self.node.sdo[0x6040].bits[8] = 0
         val = self.node.sdo[0x6040].raw
         val |= 0xF
         val &= 0x7F

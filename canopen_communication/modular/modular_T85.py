@@ -129,7 +129,7 @@ class T85(Canopen_control_init):
         get the motor actual value
         :return velocity(rad/s)
         """
-        return (self._T85_msg_from_device(self.node.sdo[0x606c].phys)) * 10 # rad/s
+        return (self._T85_msg_from_device(self.node.sdo[0x606c].phys)) / 10 # rad/s
 
     def get_torque(self):
         """
